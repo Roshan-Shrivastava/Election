@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Voting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        .candidate {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Election Voting System</h2>
+    <label for="voterId">Voter ID:</label>
+    <input type="text" id="voterId" readonly><br><br>
+
+    <div class="candidate">
+        <p>Mr. Narendra Modi</p>
+        <button onclick="vote(this)" id="btn1">Vote</button>
+    </div>
+    <div class="candidate">
+        <p>Mr. Rahul Gandhi</p>
+        <button onclick="vote(this)" id="btn2">Vote</button>
+    </div>
+    <div class="candidate">
+        <p>Mr. Kejriwal</p>
+        <button onclick="vote(this)" id="btn3">Vote</button>
+    </div>
+    <h3 id="result">Total Votes: 0</h3>
+</div>
+
+<script>
+    // Automatically fill voter ID from localStorage
+    document.addEventListener("DOMContentLoaded", function() {
+        const voterId = localStorage.getItem("voterId");
+        if (voterId) {
+            document.getElementById("voterId").value = voterId;
+        } else {
+            alert("Please log in first!");
+            window.location.href = "login.html"; // Redirect to login page if no voter ID
+        }
+    });
+
+    function vote(button) {
+        const voterId = document.getElementById("voterId").value;
+
+        if (!voterId) {
+            alert("Please log in before voting!");
+            return;
+        }
+
+        const candidate = button.parentElement.querySelector("p").innerText; // ✅ Fetch candidate name dynamically
+
+        fetch("/vote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ voterId: voterId, candidateName: candidate }) // ✅ Correct candidate name sent
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            if (!data.includes("log in")) {
+                document.getElementById("result").innerText = `You voted for ${candidate}`;
+                document.getElementById("btn1").disabled = true;
+                document.getElementById("btn2").disabled = true;
+                document.getElementById("btn3").disabled = true;
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+</body>
+</html>
