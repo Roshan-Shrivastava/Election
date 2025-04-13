@@ -20,6 +20,8 @@ public class Login {
         this.voterId=voterId;
     }
 
+
+    
     public void setVotingDate( String votingDate){
         this.votingDate=votingDate;
     }
